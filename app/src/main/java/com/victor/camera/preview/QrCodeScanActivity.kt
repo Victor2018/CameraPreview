@@ -6,11 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.victor.camera.lib.ViewFinderView
 import com.victor.camera.preview.lib.AnalyzeResult
 import com.victor.camera.preview.lib.BaseCameraScan
 import com.victor.camera.preview.lib.CameraScan
@@ -37,6 +39,7 @@ class QrCodeScanActivity<T> : AppCompatActivity(), OnScanResultCallback<T> {
      * 预览视图
      */
     protected var previewView: PreviewView? = null
+    protected var mViewFinderView: ViewFinderView? = null
 
     /**
      * 手电筒视图
@@ -60,7 +63,8 @@ class QrCodeScanActivity<T> : AppCompatActivity(), OnScanResultCallback<T> {
         }
 
         previewView = findViewById(R.id.previewView)
-        mCameraScan = createCameraScan(previewView)
+        mViewFinderView = findViewById(R.id.mViewFinderView)
+        mCameraScan = createCameraScan(previewView,mViewFinderView)
         initCameraScan(mCameraScan!!)
         startCamera()
     }
@@ -165,8 +169,8 @@ class QrCodeScanActivity<T> : AppCompatActivity(), OnScanResultCallback<T> {
      * @param previewView [PreviewView]
      * @return [CameraScan]
      */
-    fun createCameraScan(previewView: PreviewView?): CameraScan<T> {
-        return BaseCameraScan(this, previewView!!)
+    fun createCameraScan(previewView: PreviewView?,viewFinderView: ViewFinderView?): CameraScan<T> {
+        return BaseCameraScan(this, previewView!!,viewFinderView!!)
     }
 
     /**

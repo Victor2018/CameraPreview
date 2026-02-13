@@ -18,6 +18,7 @@ package com.victor.camera.preview.lib;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,6 +44,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.victor.camera.lib.ViewFinderView;
 import com.victor.camera.preview.lib.analyze.Analyzer;
 import com.victor.camera.preview.lib.config.CameraConfig;
 import com.victor.camera.preview.lib.config.CameraConfigFactory;
@@ -97,6 +99,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
      * 预览视图
      */
     private final PreviewView mPreviewView;
+    private final ViewFinderView mViewFinderView;
 
     private ExecutorService mExecutorService;
 
@@ -168,18 +171,22 @@ public class BaseCameraScan<T> extends CameraScan<T> {
      */
     private float mDownY;
 
-    public BaseCameraScan(@NonNull ComponentActivity activity, @NonNull PreviewView previewView) {
-        this(activity, activity, previewView);
+    public BaseCameraScan(@NonNull ComponentActivity activity,
+                          @NonNull PreviewView previewView,@NonNull ViewFinderView viewFinderView) {
+        this(activity, activity, previewView,viewFinderView);
     }
 
-    public BaseCameraScan(@NonNull Fragment fragment, @NonNull PreviewView previewView) {
-        this(fragment.requireContext(), fragment.getViewLifecycleOwner(), previewView);
+    public BaseCameraScan(@NonNull Fragment fragment, @NonNull PreviewView previewView,
+                          @NonNull ViewFinderView viewFinderView) {
+        this(fragment.requireContext(), fragment.getViewLifecycleOwner(), previewView,viewFinderView);
     }
 
-    public BaseCameraScan(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner, @NonNull PreviewView previewView) {
+    public BaseCameraScan(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner,
+                          @NonNull PreviewView previewView,@NonNull ViewFinderView viewFinderView) {
         this.mContext = context;
         this.mLifecycleOwner = lifecycleOwner;
         this.mPreviewView = previewView;
+        this.mViewFinderView = viewFinderView;
         initData();
     }
 
@@ -192,6 +199,9 @@ public class BaseCameraScan<T> extends CameraScan<T> {
         mResultLiveData = new MutableLiveData<>();
         mResultLiveData.observe(mLifecycleOwner, result -> {
             if (result != null) {
+                Rect rect = mViewFinderView.getCropFrameRect();
+                Log.d(getClass().getSimpleName(),"handleAnalyzeResult-rect = " + rect);
+                result.setCropFrameRect(mViewFinderView.getCropFrameRect());
                 handleAnalyzeResult(result);
             } else if (mOnScanResultCallback != null) {
                 mOnScanResultCallback.onScanResultFailure();

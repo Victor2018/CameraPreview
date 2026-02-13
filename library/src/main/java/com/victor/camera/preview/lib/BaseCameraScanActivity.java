@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.view.PreviewView;
 
+import com.victor.camera.lib.ViewFinderView;
 import com.victor.camera.preview.lib.analyze.Analyzer;
 import com.victor.camera.preview.lib.util.PermissionUtils;
 
@@ -56,6 +57,7 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
      * 预览视图
      */
     protected PreviewView previewView;
+    protected ViewFinderView mViewFinderView;
     /**
      * 手电筒视图
      */
@@ -79,7 +81,8 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
      */
     public void initUI() {
         previewView = findViewById(getPreviewViewId());
-        mCameraScan = createCameraScan(previewView);
+        mViewFinderView = findViewById(getViewFinderViewId());
+        mCameraScan = createCameraScan(previewView,mViewFinderView);
         initCameraScan(mCameraScan);
         startCamera();
     }
@@ -192,6 +195,9 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
         return R.id.previewView;
     }
 
+    public int getViewFinderViewId() {
+        return R.id.mViewFinderView;
+    }
 
     /**
      * 获取{@link CameraScan}
@@ -210,8 +216,8 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
      * @return {@link CameraScan}
      */
     @NonNull
-    public CameraScan<T> createCameraScan(PreviewView previewView) {
-        return new BaseCameraScan<>(this, previewView);
+    public CameraScan<T> createCameraScan(PreviewView previewView, ViewFinderView viewFinderView) {
+        return new BaseCameraScan<>(this, previewView,viewFinderView);
     }
 
     /**

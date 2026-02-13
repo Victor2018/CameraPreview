@@ -17,6 +17,7 @@ package com.victor.camera.preview.lib;
 
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,15 +52,29 @@ public class AnalyzeResult<T> {
     private Bitmap bitmap;
 
     /**
+     * 二维码识别区域
+     */
+    private Rect cropFrameRect;
+
+    /**
      * 分析结果
      */
     private final T result;
 
-    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull T result) {
+    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull T result,Rect cropFrameRect) {
         this.imageData = imageData;
         this.imageFormat = imageFormat;
         this.frameMetadata = frameMetadata;
         this.result = result;
+        this.cropFrameRect = cropFrameRect;
+    }
+
+    public void setCropFrameRect(Rect cropFrameRect) {
+        this.cropFrameRect = cropFrameRect;
+    }
+
+    public Rect getCropFrameRect() {
+        return cropFrameRect;
     }
 
     /**
