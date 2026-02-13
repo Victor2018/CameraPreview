@@ -26,7 +26,7 @@ import com.victor.camera.preview.lib.analyze.Analyzer;
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
-public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implements CameraScan.OnScanResultCallback {
+public abstract class BaseCameraScanActivity extends AppCompatActivity implements CameraScan.OnScanResultCallback {
 
     private final String TAG = getClass().getSimpleName();
     /**

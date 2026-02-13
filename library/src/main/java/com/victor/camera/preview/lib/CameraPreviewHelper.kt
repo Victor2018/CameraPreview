@@ -39,7 +39,6 @@ class CameraPreviewHelper {
 
     constructor(activity: ComponentActivity, previewView: PreviewView, callback: OnScanResultCallback?) {
         mActivity = activity
-        mActivity = activity
         mCameraScan = BaseCameraScan(activity, previewView)
         mCameraScan?.setOnScanResultCallback(callback)
     }
@@ -87,6 +86,10 @@ class CameraPreviewHelper {
         mCameraScan?.setCropFrameRect(rect)
     }
 
+    fun setAnalyzeImage(analyze: Boolean) {
+        mCameraScan?.setAnalyzeImage(analyze)
+    }
+
     fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
@@ -119,4 +122,5 @@ class CameraPreviewHelper {
     fun onDestroy() {
         releaseCamera()
     }
+
 }
