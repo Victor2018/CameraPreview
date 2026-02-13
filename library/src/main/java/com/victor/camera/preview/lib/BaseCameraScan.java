@@ -59,11 +59,9 @@ import java.util.concurrent.Executors;
  * <p>
  * 快速实现扫描识别主要有以下几种方式：
  * <p>
- * 1、通过继承 {@link BaseCameraScanActivity}或者{@link BaseCameraScanFragment}或其子类，可快速实现扫描识别。
  * （适用于大多数场景，自定义布局时需覆写getLayoutId方法）
  * <p>
  * 2、在你项目的Activity或者Fragment中实例化一个{@link BaseCameraScan}。（适用于想在扫描界面写交互逻辑，又因为项目
- * 架构或其它原因，无法直接或间接继承{@link BaseCameraScanActivity}或{@link BaseCameraScanFragment}时使用）
  * <p>
  * 3、继承{@link CameraScan}自己实现一个，可参照默认实现类{@link BaseCameraScan}，其他步骤同方式2。（高级用法，谨慎使用）
  *
@@ -98,6 +96,7 @@ public class BaseCameraScan extends CameraScan {
      * 预览视图
      */
     private final PreviewView mPreviewView;
+    private View mTouchView;
 
     private ExecutorService mExecutorService;
 
@@ -190,6 +189,10 @@ public class BaseCameraScan extends CameraScan {
         initData();
     }
 
+    public void setTouchView(View mTouchView) {
+        this.mTouchView = mTouchView;
+    }
+
     /**
      * 初始化
      */
@@ -232,13 +235,15 @@ public class BaseCameraScan extends CameraScan {
                 return true;
             });
 
-        mPreviewView.setOnTouchListener((v, event) -> {
-            handlePreviewViewClickTap(event);
-            if (isNeedTouchZoom()) {
-                return mZoomGestureDetector.onTouchEvent(event);
-            }
-            return false;
-        });
+        if (mTouchView != null) {
+            mTouchView.setOnTouchListener((v, event) -> {
+                handlePreviewViewClickTap(event);
+                if (isNeedTouchZoom()) {
+                    return mZoomGestureDetector.onTouchEvent(event);
+                }
+                return false;
+            });
+        }
 
         mBeepManager = new BeepManager(mContext.getApplicationContext());
         mAmbientLightManager = new AmbientLightManager(mContext.getApplicationContext());
@@ -346,6 +351,9 @@ public class BaseCameraScan extends CameraScan {
                 imageAnalysis.setAnalyzer(mExecutorService, image -> {
 
                     if (isAnalyze && !isAnalyzeResult && mAnalyzer != null) {
+                        if (mCropFrameRect == null) {
+                            mCropFrameRect = new Rect();
+                        }
                         mAnalyzer.analyze(image,mCropFrameRect, mOnAnalyzeListener);
                     }
                     image.close();

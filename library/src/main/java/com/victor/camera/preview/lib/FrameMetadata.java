@@ -5,9 +5,6 @@ import androidx.annotation.NonNull;
 /**
  * 帧元数据
  *
- * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
- * <p>
- * <a href="https://github.com/jenly1314">Follow me</a>
  */
 public class FrameMetadata {
 
