@@ -4,11 +4,13 @@ import android.Manifest
 import android.app.Activity
 import android.graphics.Rect
 import android.util.Log
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.camera.view.PreviewView
 import androidx.fragment.app.Fragment
 import com.victor.camera.preview.lib.CameraScan.OnScanResultCallback
 import com.victor.camera.preview.lib.analyze.Analyzer
+import com.victor.camera.preview.lib.config.CameraConfig
 import com.victor.camera.preview.lib.util.PermissionUtils
 
 /*
@@ -33,7 +35,7 @@ class CameraPreviewHelper {
     /**
      * CameraScan
      */
-    private var mCameraScan: CameraScan? = null
+    var mCameraScan: CameraScan? = null
 
     var mActivity: Activity? = null
 
@@ -74,8 +76,26 @@ class CameraPreviewHelper {
         mCameraScan?.release()
     }
 
+    fun setCameraConfig(cameraConfig: CameraConfig) {
+        mCameraScan?.setCameraConfig(cameraConfig)
+    }
     fun setAnalyzer(analyzer: Analyzer) {
         mCameraScan?.setAnalyzer(analyzer)
+    }
+
+    fun setAutoStopAnalyze(autoStopAnalyze: Boolean) {
+        mCameraScan?.setAutoStopAnalyze(autoStopAnalyze)
+    }
+
+    fun bindFlashlightView(v: View) {
+        mCameraScan?.bindFlashlightView(v)
+    }
+
+    fun setDarkLightLux(lightLux: Float) {
+        mCameraScan?.setDarkLightLux(lightLux)
+    }
+    fun setBrightLightLux(lightLux: Float) {
+        mCameraScan?.setBrightLightLux(lightLux)
     }
 
     fun enableTorch(isTorch: Boolean) {
@@ -88,6 +108,14 @@ class CameraPreviewHelper {
 
     fun setAnalyzeImage(analyze: Boolean) {
         mCameraScan?.setAnalyzeImage(analyze)
+    }
+
+    fun setPlayBeep(playBeep: Boolean) {
+        mCameraScan?.setPlayBeep(playBeep)
+    }
+
+    fun setVibrate(vibrate: Boolean) {
+        mCameraScan?.setVibrate(vibrate)
     }
 
     fun onRequestPermissionsResult(
