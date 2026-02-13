@@ -39,9 +39,7 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isContentView()) {
-            setContentView(getLayoutId());
-        }
+        setContentView(getLayoutId());
         initUI();
     }
 
@@ -71,32 +69,18 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
     }
 
     /**
-     * 返回true时会自动初始化{@link #setContentView(int)}，返回为false是需自己去初始化{@link #setContentView(int)}
-     *
-     * @return 默认返回true
-     */
-    public boolean isContentView() {
-        return true;
-    }
-
-    /**
      * 布局ID；通过覆写此方法可以自定义布局
      *
      * @return 布局ID
      */
-    public int getLayoutId() {
-        return R.layout.camera_scan;
-    }
+    public abstract int getLayoutId();
 
     /**
      * 预览视图{@link #previewView}的ID
      *
      * @return 预览视图ID
      */
-    public int getPreviewViewId() {
-        return R.id.previewView;
-    }
-
+    public abstract int getPreviewViewId();
 
     /**
      * 创建分析器

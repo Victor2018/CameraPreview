@@ -63,9 +63,7 @@ public abstract class BaseCameraScanFragment extends Fragment implements CameraS
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (isContentView()) {
-            mRootView = createRootView(inflater, container);
-        }
+        mRootView = createRootView(inflater, container);
         return mRootView;
     }
 
@@ -103,15 +101,6 @@ public abstract class BaseCameraScanFragment extends Fragment implements CameraS
     }
 
     /**
-     * 返回true时会自动初始化{@link #createRootView(LayoutInflater, ViewGroup)}，返回为false是需自己去初始化{@link #createRootView(LayoutInflater, ViewGroup)}
-     *
-     * @return 默认返回true
-     */
-    public boolean isContentView() {
-        return true;
-    }
-
-    /**
      * 创建{@link #mRootView}
      *
      * @param inflater  {@link LayoutInflater}
@@ -128,19 +117,14 @@ public abstract class BaseCameraScanFragment extends Fragment implements CameraS
      *
      * @return 布局ID
      */
-    public int getLayoutId() {
-        return R.layout.camera_scan;
-    }
+    public abstract int getLayoutId();
 
     /**
      * 预览视图{@link #previewView}的ID
      *
      * @return 预览视图ID
      */
-    public int getPreviewViewId() {
-        return R.id.previewView;
-    }
-
+    public abstract int getPreviewViewId();
     /**
      * 获取根视图
      *
