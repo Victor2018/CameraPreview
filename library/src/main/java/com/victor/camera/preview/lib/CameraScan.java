@@ -16,6 +16,7 @@
 package com.victor.camera.preview.lib;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 
@@ -44,7 +45,7 @@ import com.victor.camera.preview.lib.config.CameraConfig;
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
 @SuppressWarnings("unused")
-public abstract class CameraScan<T> implements ICamera, ICameraControl {
+public abstract class CameraScan implements ICamera, ICameraControl {
 
     /**
      * 扫描返回结果的key；解析方式可参见：{@link #parseScanResult(Intent)}
@@ -93,7 +94,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param needTouchZoom 是否需要支持触摸缩放
      * @return {@link CameraScan}
      */
-    public CameraScan<T> setNeedTouchZoom(boolean needTouchZoom) {
+    public CameraScan setNeedTouchZoom(boolean needTouchZoom) {
         isNeedTouchZoom = needTouchZoom;
         return this;
     }
@@ -118,7 +119,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param cameraConfig 相机配置
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setCameraConfig(CameraConfig cameraConfig);
+    public abstract CameraScan setCameraConfig(CameraConfig cameraConfig);
 
     /**
      * 设置是否分析图像，默认为：true；通过此方法可以动态控制是否分析图像；在连续扫描识别时，可能会用到。
@@ -128,7 +129,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param analyze 是否分析图像
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setAnalyzeImage(boolean analyze);
+    public abstract CameraScan setAnalyzeImage(boolean analyze);
 
     /**
      * 设置是否自动停止分析图像；默认为：true；
@@ -143,7 +144,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param autoStopAnalyze 是否自动停止分析
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setAutoStopAnalyze(boolean autoStopAnalyze);
+    public abstract CameraScan setAutoStopAnalyze(boolean autoStopAnalyze);
 
     /**
      * 设置分析器，如果内置的一些分析器不满足您的需求，你也可以自定义{@link Analyzer}，
@@ -152,7 +153,15 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param analyzer 分析器
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setAnalyzer(Analyzer<T> analyzer);
+    public abstract CameraScan setAnalyzer(Analyzer analyzer);
+
+    /**
+     * 设置识别区域
+     * @param rect
+     * @return
+     */
+    public abstract CameraScan setCropFrameRect(Rect rect);
+
 
     /**
      * 设置是否振动
@@ -160,7 +169,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param vibrate 是否振动
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setVibrate(boolean vibrate);
+    public abstract CameraScan setVibrate(boolean vibrate);
 
     /**
      * 设置是否播放提示音
@@ -168,7 +177,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param playBeep 是否播放蜂鸣提示音
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setPlayBeep(boolean playBeep);
+    public abstract CameraScan setPlayBeep(boolean playBeep);
 
     /**
      * 设置扫描结果回调
@@ -176,7 +185,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param callback 扫描结果回调
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setOnScanResultCallback(OnScanResultCallback<T> callback);
+    public abstract CameraScan setOnScanResultCallback(OnScanResultCallback callback);
 
     /**
      * 绑定手电筒，绑定后可根据光照传感器，动态显示或隐藏手电筒。
@@ -184,7 +193,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param v 手电筒视图；传空表示不绑定
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> bindFlashlightView(@Nullable View v);
+    public abstract CameraScan bindFlashlightView(@Nullable View v);
 
     /**
      * 设置光照强度足够暗的阈值（单位：lux），需要通过{@link #bindFlashlightView(View)}绑定手电筒才有效
@@ -192,7 +201,7 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param lightLux 光照度阈值
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setDarkLightLux(float lightLux);
+    public abstract CameraScan setDarkLightLux(float lightLux);
 
     /**
      * 设置光照强度足够明亮的阈值（单位：lux），需要通过{@link #bindFlashlightView(View)}绑定手电筒才有效
@@ -200,20 +209,19 @@ public abstract class CameraScan<T> implements ICamera, ICameraControl {
      * @param lightLux 光照度阈值
      * @return {@link CameraScan}
      */
-    public abstract CameraScan<T> setBrightLightLux(float lightLux);
+    public abstract CameraScan setBrightLightLux(float lightLux);
 
     /**
      * 扫描结果回调
      *
-     * @param <T> 扫描结果数据类型
      */
-    public interface OnScanResultCallback<T> {
+    public interface OnScanResultCallback {
         /**
          * 扫描结果回调
          *
          * @param result 扫描结果
          */
-        void onScanResultCallback(@NonNull AnalyzeResult<T> result);
+        void onScanResultCallback(@NonNull AnalyzeResult result);
 
         /**
          * 扫描结果识别失败时触发此回调方法

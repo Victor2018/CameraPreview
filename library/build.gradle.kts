@@ -43,7 +43,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     api(libs.bundles.camerax)
-    api(libs.victor.viewfinderview)
 }
 
 afterEvaluate {

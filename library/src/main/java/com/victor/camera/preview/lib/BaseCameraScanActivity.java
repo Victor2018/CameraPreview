@@ -1,33 +1,13 @@
-/*
- * Copyright (C) Jenly, CameraScan Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.victor.camera.preview.lib;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.view.PreviewView;
 
-import com.victor.camera.lib.ViewFinderView;
 import com.victor.camera.preview.lib.analyze.Analyzer;
-import com.victor.camera.preview.lib.util.PermissionUtils;
 
 /**
  * 相机扫描基类；{@link BaseCameraScanActivity} 内部持有{@link CameraScan}，便于快速实现扫描识别。
@@ -46,26 +26,15 @@ import com.victor.camera.preview.lib.util.PermissionUtils;
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
-public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implements CameraScan.OnScanResultCallback<T> {
+public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implements CameraScan.OnScanResultCallback {
 
     private final String TAG = getClass().getSimpleName();
-    /**
-     * 相机权限请求代码
-     */
-    private static final int CAMERA_PERMISSION_REQUEST_CODE = 0x86;
     /**
      * 预览视图
      */
     protected PreviewView previewView;
-    protected ViewFinderView mViewFinderView;
-    /**
-     * 手电筒视图
-     */
-    protected View ivFlashlight;
-    /**
-     * CameraScan
-     */
-    private CameraScan<T> mCameraScan;
+
+    protected CameraPreviewHelper mCameraPreviewHelper = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,90 +50,23 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
      */
     public void initUI() {
         previewView = findViewById(getPreviewViewId());
-        mViewFinderView = findViewById(getViewFinderViewId());
-        mCameraScan = createCameraScan(previewView,mViewFinderView);
-        initCameraScan(mCameraScan);
-        startCamera();
+        mCameraPreviewHelper = new CameraPreviewHelper(this,previewView,this);
+        mCameraPreviewHelper.setAnalyzer(createAnalyzer());
+        mCameraPreviewHelper.startCamera();
     }
 
-    /**
-     * 初始化CameraScan
-     */
-    public void initCameraScan(@NonNull CameraScan<T> cameraScan) {
-        cameraScan.setAnalyzer(createAnalyzer())
-                .bindFlashlightView(ivFlashlight)
-                .setOnScanResultCallback(this);
-
-    }
-
-    /**
-     * 点击手电筒
-     */
-    protected void onClickFlashlight() {
-        toggleTorchState();
-    }
-
-    /**
-     * 切换闪光灯状态（开启/关闭）
-     */
-    protected void toggleTorchState() {
-        if (getCameraScan() != null) {
-            boolean isTorch = getCameraScan().isTorchEnabled();
-            getCameraScan().enableTorch(!isTorch);
-            if (ivFlashlight != null) {
-                ivFlashlight.setSelected(!isTorch);
-            }
-        }
-    }
-
-    /**
-     * 启动相机预览
-     */
-    public void startCamera() {
-        if (mCameraScan != null) {
-            if (PermissionUtils.checkPermission(this, Manifest.permission.CAMERA)) {
-                mCameraScan.startCamera();
-            } else {
-                Log.d(TAG,"Camera permission not granted, requesting permission.");
-                PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, CAMERA_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
-
-    /**
-     * 释放相机
-     */
-    private void releaseCamera() {
-        if (mCameraScan != null) {
-            mCameraScan.release();
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            requestCameraPermissionResult(permissions, grantResults);
-        }
-    }
-
-    /**
-     * 请求Camera权限回调结果
-     *
-     * @param permissions  权限
-     * @param grantResults 授权结果
-     */
-    public void requestCameraPermissionResult(@NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (PermissionUtils.requestPermissionsResult(Manifest.permission.CAMERA, permissions, grantResults)) {
-            startCamera();
-        } else {
-            finish();
+        if (mCameraPreviewHelper != null) {
+            mCameraPreviewHelper.onRequestPermissionsResult(requestCode,permissions,grantResults);
         }
     }
 
     @Override
     protected void onDestroy() {
-        releaseCamera();
+        if (mCameraPreviewHelper != null) {
+            mCameraPreviewHelper.releaseCamera();
+        }
         super.onDestroy();
     }
 
@@ -195,30 +97,6 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
         return R.id.previewView;
     }
 
-    public int getViewFinderViewId() {
-        return R.id.mViewFinderView;
-    }
-
-    /**
-     * 获取{@link CameraScan}
-     *
-     * @return {@link #mCameraScan}
-     */
-    public CameraScan<T> getCameraScan() {
-        return mCameraScan;
-    }
-
-
-    /**
-     * 创建{@link CameraScan}
-     *
-     * @param previewView {@link  PreviewView}
-     * @return {@link CameraScan}
-     */
-    @NonNull
-    public CameraScan<T> createCameraScan(PreviewView previewView, ViewFinderView viewFinderView) {
-        return new BaseCameraScan<>(this, previewView,viewFinderView);
-    }
 
     /**
      * 创建分析器
@@ -226,5 +104,5 @@ public abstract class BaseCameraScanActivity<T> extends AppCompatActivity implem
      * @return {@link Analyzer}
      */
     @Nullable
-    public abstract Analyzer<T> createAnalyzer();
+    public abstract Analyzer createAnalyzer();
 }

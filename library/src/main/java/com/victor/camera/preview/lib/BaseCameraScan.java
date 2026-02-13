@@ -44,7 +44,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.victor.camera.lib.ViewFinderView;
 import com.victor.camera.preview.lib.analyze.Analyzer;
 import com.victor.camera.preview.lib.config.CameraConfig;
 import com.victor.camera.preview.lib.config.CameraConfigFactory;
@@ -72,7 +71,7 @@ import java.util.concurrent.Executors;
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
-public class BaseCameraScan<T> extends CameraScan<T> {
+public class BaseCameraScan extends CameraScan {
 
     private final String TAG = getClass().getSimpleName();
     
@@ -99,7 +98,6 @@ public class BaseCameraScan<T> extends CameraScan<T> {
      * 预览视图
      */
     private final PreviewView mPreviewView;
-    private final ViewFinderView mViewFinderView;
 
     private ExecutorService mExecutorService;
 
@@ -117,7 +115,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     /**
      * 分析器
      */
-    private Analyzer<T> mAnalyzer;
+    private Analyzer mAnalyzer;
     /**
      * 是否分析
      */
@@ -137,15 +135,15 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     /**
      * 分析结果
      */
-    private MutableLiveData<AnalyzeResult<T>> mResultLiveData;
+    private MutableLiveData<AnalyzeResult> mResultLiveData;
     /**
      * 扫描结果回调
      */
-    private OnScanResultCallback<T> mOnScanResultCallback;
+    private OnScanResultCallback mOnScanResultCallback;
     /**
      * 分析监听器
      */
-    private Analyzer.OnAnalyzeListener<T> mOnAnalyzeListener;
+    private Analyzer.OnAnalyzeListener mOnAnalyzeListener;
     /**
      * 音效管理器：主要用于播放蜂鸣提示音和振动效果
      */
@@ -171,22 +169,24 @@ public class BaseCameraScan<T> extends CameraScan<T> {
      */
     private float mDownY;
 
+    /**
+     * 识别区域
+     */
+    private Rect mCropFrameRect;
+
     public BaseCameraScan(@NonNull ComponentActivity activity,
-                          @NonNull PreviewView previewView,@NonNull ViewFinderView viewFinderView) {
-        this(activity, activity, previewView,viewFinderView);
+                          @NonNull PreviewView previewView) {
+        this(activity, activity, previewView);
     }
 
-    public BaseCameraScan(@NonNull Fragment fragment, @NonNull PreviewView previewView,
-                          @NonNull ViewFinderView viewFinderView) {
-        this(fragment.requireContext(), fragment.getViewLifecycleOwner(), previewView,viewFinderView);
+    public BaseCameraScan(@NonNull Fragment fragment, @NonNull PreviewView previewView) {
+        this(fragment.requireContext(), fragment.getViewLifecycleOwner(), previewView);
     }
 
-    public BaseCameraScan(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner,
-                          @NonNull PreviewView previewView,@NonNull ViewFinderView viewFinderView) {
+    public BaseCameraScan(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner, @NonNull PreviewView previewView) {
         this.mContext = context;
         this.mLifecycleOwner = lifecycleOwner;
         this.mPreviewView = previewView;
-        this.mViewFinderView = viewFinderView;
         initData();
     }
 
@@ -199,18 +199,15 @@ public class BaseCameraScan<T> extends CameraScan<T> {
         mResultLiveData = new MutableLiveData<>();
         mResultLiveData.observe(mLifecycleOwner, result -> {
             if (result != null) {
-                Rect rect = mViewFinderView.getCropFrameRect();
-                Log.d(getClass().getSimpleName(),"handleAnalyzeResult-rect = " + rect);
-                result.setCropFrameRect(mViewFinderView.getCropFrameRect());
                 handleAnalyzeResult(result);
             } else if (mOnScanResultCallback != null) {
                 mOnScanResultCallback.onScanResultFailure();
             }
         });
 
-        mOnAnalyzeListener = new Analyzer.OnAnalyzeListener<T>() {
+        mOnAnalyzeListener = new Analyzer.OnAnalyzeListener() {
             @Override
-            public void onSuccess(@NonNull AnalyzeResult<T> result) {
+            public void onSuccess(@NonNull AnalyzeResult result) {
                 mResultLiveData.postValue(result);
             }
 
@@ -321,7 +318,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setCameraConfig(CameraConfig cameraConfig) {
+    public CameraScan setCameraConfig(CameraConfig cameraConfig) {
         if (cameraConfig != null) {
             this.mCameraConfig = cameraConfig;
         }
@@ -347,8 +344,9 @@ public class BaseCameraScan<T> extends CameraScan<T> {
                         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST));
                 imageAnalysis.setAnalyzer(mExecutorService, image -> {
+
                     if (isAnalyze && !isAnalyzeResult && mAnalyzer != null) {
-                        mAnalyzer.analyze(image, mOnAnalyzeListener);
+                        mAnalyzer.analyze(image,mCropFrameRect, mOnAnalyzeListener);
                     }
                     image.close();
                 });
@@ -384,7 +382,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
      *
      * @param result 分析结果
      */
-    private synchronized void handleAnalyzeResult(AnalyzeResult<T> result) {
+    private synchronized void handleAnalyzeResult(AnalyzeResult result) {
         if (isAnalyzeResult || !isAnalyze) {
             return;
         }
@@ -413,20 +411,26 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setAnalyzeImage(boolean analyze) {
+    public CameraScan setAnalyzeImage(boolean analyze) {
         isAnalyze = analyze;
         return this;
     }
 
     @Override
-    public CameraScan<T> setAutoStopAnalyze(boolean autoStopAnalyze) {
+    public CameraScan setAutoStopAnalyze(boolean autoStopAnalyze) {
         isAutoStopAnalyze = autoStopAnalyze;
         return this;
     }
 
     @Override
-    public CameraScan<T> setAnalyzer(Analyzer<T> analyzer) {
+    public CameraScan setAnalyzer(Analyzer analyzer) {
         mAnalyzer = analyzer;
+        return this;
+    }
+
+    @Override
+    public CameraScan setCropFrameRect(Rect rect) {
+        mCropFrameRect = rect;
         return this;
     }
 
@@ -519,7 +523,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setVibrate(boolean vibrate) {
+    public CameraScan setVibrate(boolean vibrate) {
         if (mBeepManager != null) {
             mBeepManager.setVibrate(vibrate);
         }
@@ -527,7 +531,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setPlayBeep(boolean playBeep) {
+    public CameraScan setPlayBeep(boolean playBeep) {
         if (mBeepManager != null) {
             mBeepManager.setPlayBeep(playBeep);
         }
@@ -535,7 +539,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setOnScanResultCallback(OnScanResultCallback<T> callback) {
+    public CameraScan setOnScanResultCallback(OnScanResultCallback callback) {
         this.mOnScanResultCallback = callback;
         return this;
     }
@@ -576,7 +580,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> bindFlashlightView(@Nullable View flashlightView) {
+    public CameraScan bindFlashlightView(@Nullable View flashlightView) {
         this.flashlightView = flashlightView;
         if (mAmbientLightManager != null) {
             mAmbientLightManager.setLightSensorEnabled(flashlightView != null);
@@ -585,7 +589,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setDarkLightLux(float lightLux) {
+    public CameraScan setDarkLightLux(float lightLux) {
         if (mAmbientLightManager != null) {
             mAmbientLightManager.setDarkLightLux(lightLux);
         }
@@ -593,7 +597,7 @@ public class BaseCameraScan<T> extends CameraScan<T> {
     }
 
     @Override
-    public CameraScan<T> setBrightLightLux(float lightLux) {
+    public CameraScan setBrightLightLux(float lightLux) {
         if (mAmbientLightManager != null) {
             mAmbientLightManager.setBrightLightLux(lightLux);
         }
