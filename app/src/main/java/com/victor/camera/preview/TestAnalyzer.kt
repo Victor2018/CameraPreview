@@ -23,11 +23,9 @@ import com.victor.camera.preview.lib.analyze.Analyzer
 class TestAnalyzer : Analyzer {
     override fun analyze(
         imageProxy: ImageProxy,
-        cropFrameRect: Rect,
         listener: Analyzer.OnAnalyzeListener
     ) {
-        Log.e("TestAnalyzer","TestAnalyzer-result.cropFrameRect = ${cropFrameRect}")
         listener.onSuccess(AnalyzeResult(byteArrayOf(6), ImageFormat.NV21,
-            FrameMetadata(100,100,60), "423099", cropFrameRect))
+            FrameMetadata(100,100,60), "423099"))
     }
 }

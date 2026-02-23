@@ -153,13 +153,6 @@ public abstract class CameraScan implements ICamera, ICameraControl {
      */
     public abstract CameraScan setAnalyzer(Analyzer analyzer);
 
-    /**
-     * 设置识别区域
-     * @param rect
-     * @return
-     */
-    public abstract CameraScan setCropFrameRect(Rect rect);
-
 
     /**
      * 设置是否振动

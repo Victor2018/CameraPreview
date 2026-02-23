@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.victor.camera.lib.ViewFinderView
-import com.victor.camera.lib.interfaces.OnTorchStateChangeListener
 import com.victor.camera.preview.lib.AnalyzeResult
 import com.victor.camera.preview.lib.CameraPreviewHelper
 import com.victor.camera.preview.lib.CameraScan.OnScanResultCallback
@@ -30,7 +28,6 @@ class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
      * 预览视图
      */
     protected var previewView: PreviewView? = null
-    protected var mViewFinderView: ViewFinderView? = null
 
     protected var mCameraPreviewHelper: CameraPreviewHelper? = null
 
@@ -46,22 +43,10 @@ class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
         }
 
         previewView = findViewById(R.id.previewView)
-        mViewFinderView = findViewById(R.id.mViewFinderView)
 
         mCameraPreviewHelper = CameraPreviewHelper(this,previewView!!,this)
         mCameraPreviewHelper?.setAnalyzer(TestAnalyzer())
-
-        mViewFinderView?.mOnTorchStateChangeListener = object : OnTorchStateChangeListener {
-            override fun onTorchStateChanged(isOn: Boolean) {
-                mCameraPreviewHelper?.enableTorch(isOn)
-            }
-        }
-
-        mViewFinderView?.post {
-            Log.e(TAG,"initCameraScan-getCropFrameRect() = " + mViewFinderView?.getCropFrameRect())
-            mCameraPreviewHelper?.setCropFrameRect(mViewFinderView?.getCropFrameRect())
-            mCameraPreviewHelper?.startCamera()
-        }
+        mCameraPreviewHelper?.startCamera()
     }
 
     override fun onRequestPermissionsResult(
@@ -80,6 +65,5 @@ class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
 
     override fun onScanResultCallback(result: AnalyzeResult) {
         Log.e(TAG,"onScanResultCallback-result.imageData = ${result.imageData}")
-        Log.e(TAG,"onScanResultCallback-result.cropFrameRect = ${result.cropFrameRect}")
     }
 }

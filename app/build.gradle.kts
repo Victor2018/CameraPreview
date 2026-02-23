@@ -52,5 +52,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(project(":library"))
-    implementation(libs.victor.viewfinderview)
 }

@@ -102,10 +102,6 @@ class CameraPreviewHelper {
         mCameraScan?.enableTorch(!isTorch)
     }
 
-    fun setCropFrameRect(rect: Rect?) {
-        mCameraScan?.setCropFrameRect(rect)
-    }
-
     fun setAnalyzeImage(analyze: Boolean) {
         mCameraScan?.setAnalyzeImage(analyze)
     }

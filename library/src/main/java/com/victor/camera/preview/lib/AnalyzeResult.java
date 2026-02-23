@@ -37,29 +37,15 @@ public class AnalyzeResult {
     private Bitmap bitmap;
 
     /**
-     * 二维码识别区域
-     */
-    private Rect cropFrameRect;
-
-    /**
      * 分析结果
      */
     private final String result;
 
-    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull String result,Rect cropFrameRect) {
+    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull String result) {
         this.imageData = imageData;
         this.imageFormat = imageFormat;
         this.frameMetadata = frameMetadata;
         this.result = result;
-        this.cropFrameRect = cropFrameRect;
-    }
-
-    public void setCropFrameRect(Rect cropFrameRect) {
-        this.cropFrameRect = cropFrameRect;
-    }
-
-    public Rect getCropFrameRect() {
-        return cropFrameRect;
     }
 
     /**

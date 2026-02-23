@@ -23,7 +23,7 @@ public interface Analyzer {
      * @param imageProxy 需要分析的图像
      * @param listener   分析监听器，参见：{@link OnAnalyzeListener}
      */
-    void analyze(@NonNull ImageProxy imageProxy, @NonNull Rect cropFrameRect, @NonNull OnAnalyzeListener listener);
+    void analyze(@NonNull ImageProxy imageProxy, @NonNull OnAnalyzeListener listener);
 
     /**
      * Analyze listener

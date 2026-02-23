@@ -168,10 +168,6 @@ public class BaseCameraScan extends CameraScan {
      */
     private float mDownY;
 
-    /**
-     * 识别区域
-     */
-    private Rect mCropFrameRect;
 
     public BaseCameraScan(@NonNull ComponentActivity activity,
                           @NonNull PreviewView previewView) {
@@ -351,10 +347,7 @@ public class BaseCameraScan extends CameraScan {
                 imageAnalysis.setAnalyzer(mExecutorService, image -> {
 
                     if (isAnalyze && !isAnalyzeResult && mAnalyzer != null) {
-                        if (mCropFrameRect == null) {
-                            mCropFrameRect = new Rect();
-                        }
-                        mAnalyzer.analyze(image,mCropFrameRect, mOnAnalyzeListener);
+                        mAnalyzer.analyze(image, mOnAnalyzeListener);
                     }
                     image.close();
                 });
@@ -433,12 +426,6 @@ public class BaseCameraScan extends CameraScan {
     @Override
     public CameraScan setAnalyzer(Analyzer analyzer) {
         mAnalyzer = analyzer;
-        return this;
-    }
-
-    @Override
-    public CameraScan setCropFrameRect(Rect rect) {
-        mCropFrameRect = rect;
         return this;
     }
 
