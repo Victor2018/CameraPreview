@@ -26,7 +26,7 @@ import com.victor.camera.preview.lib.util.PermissionUtils
  * -----------------------------------------------------------------
  */
 
-class CameraPreviewHelper {
+class CameraPreviewHelper<T> {
 
     private val TAG = "CameraPreviewHelper"
     /**
@@ -37,17 +37,17 @@ class CameraPreviewHelper {
     /**
      * CameraScan
      */
-    var mCameraScan: CameraScan? = null
+    var mCameraScan: CameraScan<T>? = null
 
     var mActivity: Activity? = null
 
-    constructor(activity: ComponentActivity, previewView: PreviewView, callback: OnScanResultCallback?) {
+    constructor(activity: ComponentActivity, previewView: PreviewView, callback: OnScanResultCallback<T>?) {
         mActivity = activity
         mCameraScan = BaseCameraScan(activity, previewView)
         mCameraScan?.setOnScanResultCallback(callback)
     }
 
-    constructor(fragment: Fragment, previewView: PreviewView,callback: OnScanResultCallback?) {
+    constructor(fragment: Fragment, previewView: PreviewView,callback: OnScanResultCallback<T>?) {
         mActivity = fragment.activity
         mCameraScan = BaseCameraScan(fragment, previewView)
         mCameraScan?.setOnScanResultCallback(callback)
@@ -81,7 +81,8 @@ class CameraPreviewHelper {
     fun setCameraConfig(cameraConfig: CameraConfig) {
         mCameraScan?.setCameraConfig(cameraConfig)
     }
-    fun setAnalyzer(analyzer: Analyzer) {
+
+    fun setAnalyzer(analyzer: Analyzer<T>) {
         mCameraScan?.setAnalyzer(analyzer)
     }
 

@@ -17,7 +17,7 @@ import com.victor.camera.preview.lib.util.BitmapUtils;
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
 @SuppressWarnings("unused")
-public class AnalyzeResult {
+public class AnalyzeResult<T> {
 
     /**
      * 图像数据
@@ -39,9 +39,9 @@ public class AnalyzeResult {
     /**
      * 分析结果
      */
-    private final String result;
+    private final T result;
 
-    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull String result) {
+    public AnalyzeResult(@NonNull byte[] imageData, int imageFormat, @NonNull FrameMetadata frameMetadata, @NonNull T result) {
         this.imageData = imageData;
         this.imageFormat = imageFormat;
         this.frameMetadata = frameMetadata;
@@ -145,7 +145,7 @@ public class AnalyzeResult {
      * @return 分析结果
      */
     @NonNull
-    public String getResult() {
+    public T getResult() {
         return result;
     }
 }

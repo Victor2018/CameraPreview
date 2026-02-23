@@ -16,26 +16,26 @@ import com.victor.camera.preview.lib.AnalyzeResult;
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
 @SuppressWarnings("unused")
-public interface Analyzer {
+public interface Analyzer<T> {
     /**
      * 分析图像并将分析的结果通过分析监听器返回
      *
      * @param imageProxy 需要分析的图像
      * @param listener   分析监听器，参见：{@link OnAnalyzeListener}
      */
-    void analyze(@NonNull ImageProxy imageProxy, @NonNull OnAnalyzeListener listener);
+    void analyze(@NonNull ImageProxy imageProxy, @NonNull OnAnalyzeListener<T> listener);
 
     /**
      * Analyze listener
      *
      */
-    interface OnAnalyzeListener {
+    interface OnAnalyzeListener<T> {
         /**
          * 成功
          *
          * @param result 分析结果
          */
-        void onSuccess(@NonNull AnalyzeResult result);
+        void onSuccess(@NonNull AnalyzeResult<T> result);
 
         /**
          * 失败

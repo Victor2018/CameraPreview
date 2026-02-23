@@ -13,7 +13,7 @@ import com.victor.camera.preview.lib.AnalyzeResult
 import com.victor.camera.preview.lib.CameraPreviewHelper
 import com.victor.camera.preview.lib.CameraScan.OnScanResultCallback
 
-class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
+class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback<String> {
 
     companion object {
         fun intentStart (context: Context) {
@@ -29,7 +29,7 @@ class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
      */
     protected var previewView: PreviewView? = null
 
-    protected var mCameraPreviewHelper: CameraPreviewHelper? = null
+    protected var mCameraPreviewHelper: CameraPreviewHelper<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,7 @@ class QrCodeScanActivity : AppCompatActivity(),OnScanResultCallback {
         super.onDestroy()
     }
 
-    override fun onScanResultCallback(result: AnalyzeResult) {
+    override fun onScanResultCallback(result: AnalyzeResult<String>) {
         Log.e(TAG,"onScanResultCallback-result.imageData = ${result.imageData}")
     }
 }

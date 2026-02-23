@@ -43,7 +43,7 @@ import com.victor.camera.preview.lib.config.CameraConfig;
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
 @SuppressWarnings("unused")
-public abstract class CameraScan implements ICamera, ICameraControl {
+public abstract class CameraScan<T> implements ICamera, ICameraControl {
 
     /**
      * 扫描返回结果的key；解析方式可参见：{@link #parseScanResult(Intent)}
@@ -206,13 +206,13 @@ public abstract class CameraScan implements ICamera, ICameraControl {
      * 扫描结果回调
      *
      */
-    public interface OnScanResultCallback {
+    public interface OnScanResultCallback<T> {
         /**
          * 扫描结果回调
          *
          * @param result 扫描结果
          */
-        void onScanResultCallback(@NonNull AnalyzeResult result);
+        void onScanResultCallback(@NonNull AnalyzeResult<T> result);
 
         /**
          * 扫描结果识别失败时触发此回调方法

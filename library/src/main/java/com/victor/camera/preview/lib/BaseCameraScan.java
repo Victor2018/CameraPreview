@@ -69,7 +69,7 @@ import java.util.concurrent.Executors;
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
-public class BaseCameraScan extends CameraScan {
+public class BaseCameraScan<T> extends CameraScan<T> {
 
     private final String TAG = getClass().getSimpleName();
     
@@ -114,7 +114,7 @@ public class BaseCameraScan extends CameraScan {
     /**
      * 分析器
      */
-    private Analyzer mAnalyzer;
+    private Analyzer<T> mAnalyzer;
     /**
      * 是否分析
      */
@@ -134,15 +134,15 @@ public class BaseCameraScan extends CameraScan {
     /**
      * 分析结果
      */
-    private MutableLiveData<AnalyzeResult> mResultLiveData;
+    private MutableLiveData<AnalyzeResult<T>> mResultLiveData;
     /**
      * 扫描结果回调
      */
-    private OnScanResultCallback mOnScanResultCallback;
+    private OnScanResultCallback<T> mOnScanResultCallback;
     /**
      * 分析监听器
      */
-    private Analyzer.OnAnalyzeListener mOnAnalyzeListener;
+    private Analyzer.OnAnalyzeListener<T> mOnAnalyzeListener;
     /**
      * 音效管理器：主要用于播放蜂鸣提示音和振动效果
      */
