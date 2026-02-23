@@ -99,7 +99,7 @@ class CameraPreviewHelper {
     }
 
     fun enableTorch(isTorch: Boolean) {
-        mCameraScan?.enableTorch(!isTorch)
+        mCameraScan?.enableTorch(isTorch)
     }
 
     fun setAnalyzeImage(analyze: Boolean) {
