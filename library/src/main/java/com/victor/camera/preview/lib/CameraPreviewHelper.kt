@@ -6,11 +6,13 @@ import android.graphics.Rect
 import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
+import androidx.camera.core.CameraSelector
 import androidx.camera.view.PreviewView
 import androidx.fragment.app.Fragment
 import com.victor.camera.preview.lib.CameraScan.OnScanResultCallback
 import com.victor.camera.preview.lib.analyze.Analyzer
 import com.victor.camera.preview.lib.config.CameraConfig
+import com.victor.camera.preview.lib.config.CameraConfigFactory
 import com.victor.camera.preview.lib.util.PermissionUtils
 
 /*
@@ -55,9 +57,9 @@ class CameraPreviewHelper {
      * 启动相机预览
      */
     fun startCamera() {
-        if (mCameraScan != null) {
+        if (mActivity != null) {
             if (PermissionUtils.checkPermission(mActivity!!, Manifest.permission.CAMERA)) {
-                mCameraScan!!.startCamera()
+                mCameraScan?.startCamera()
             } else {
                 Log.d(TAG, "Camera permission not granted, requesting permission.")
                 PermissionUtils.requestPermission(
@@ -141,6 +143,22 @@ class CameraPreviewHelper {
         } else {
             mActivity?.finish()
         }
+    }
+
+    /**
+     * 切换摄像头
+     */
+    fun cameraSwitch(isFront: Boolean) {
+        val lensFacing = if (isFront) {
+            CameraSelector.LENS_FACING_FRONT
+        } else {
+            CameraSelector.LENS_FACING_BACK
+        }
+        mCameraScan?.setCameraConfig(
+            CameraConfigFactory.createDefaultCameraConfig(mActivity, lensFacing)
+        )
+        // 修改CameraConfig相关配置后，需重新调用startCamera后配置才能生效
+        startCamera()
     }
 
     fun onDestroy() {
