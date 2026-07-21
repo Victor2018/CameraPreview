@@ -42,7 +42,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    api(libs.bundles.camerax)
+    implementation(libs.bundles.camerax)
 }
 
 afterEvaluate {
